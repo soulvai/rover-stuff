@@ -6,12 +6,4 @@
     <!-- Launch the custom joystick driver -->
     <node name="joystick_driver" pkg="joystick_node" type="joystick_driver.py" output="screen" required="true">
     </node>
-	<node name="arm_node" pkg="rosserial_python" type="serial_node.py" output="screen">
-		<param name="port" value="/dev/ttyUSB0"/>
-		<param name="baud" value="9600"/>
-	</node>
-	<node name="wheel_node" pkg="rosserial_python" type="serial_node.py" output="screen">
-		<param name="port" value="/dev/ttyUSB1"/>
-		<param name="baud" value="9600"/>
-	</node>
 </launch>
