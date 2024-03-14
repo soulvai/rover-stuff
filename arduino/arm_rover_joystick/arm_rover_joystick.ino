@@ -23,7 +23,7 @@ ros::NodeHandle nh;
 #define base_speed 250
 
 #define elbow_pin_a 3 // pwm
-#define elbow_pin_b 5// pwm
+#define elbow_pin_b 5// pwm 
 #define elbow_speed 250
 
 
@@ -33,7 +33,7 @@ ros::NodeHandle nh;
 
 // variables for joint directions
 int BASE_DIR = 0;
-int SHOULDER DIR = 0;
+int SHOULDER_DIR = 0;
 int ELBOW_DIR = 0;
 
 // callback for subscriber: update the joint directions
@@ -44,7 +44,7 @@ void jointAnglesCallback(const std_msgs::Int32MultiArray& msg) {
 }
 
 // ROS subscriber
-ros::Subscriber<std_msgs/Int32MultiArray> sub("joint_angles", jointAnglesCallback);
+ros::Subscriber<std_msgs::Int32MultiArray> sub("joint_angles", jointAnglesCallback);
 
 // function for actuating joints according to directions received from ROS
 void actuate_joints() {
@@ -126,9 +126,6 @@ void setup() {
   pinMode(elbow_pin_a, OUTPUT);
   pinMode(elbow_pin_b, OUTPUT);
 
-  pinMode(ch4_pin, INPUT); 
-  pinMode(ch5_pin, INPUT); 
-
 }
 
 void loop(){
@@ -136,6 +133,3 @@ void loop(){
   nh.spinOnce();
   delay(10);
 }
-
-
-
