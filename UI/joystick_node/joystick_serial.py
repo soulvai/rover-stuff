@@ -2,13 +2,16 @@
 
 import rospy
 from sensor_msgs.msg import Joy
-from geometry_msgs.msg import Twist
-from std_msgs.msg import Int32MultiArray
 import numpy as np
 import serial
 
+# import sys
+# sys.path.insert(0, '..')  # Add the directory containing config.py to the Python path
+
+from config import WHEEL_PORT
+
 # initializing
-ser = serial.Serial('/dev/ttyUSB0', 9600) # SET COM PORT ACCORDING TO ARDUINO
+ser = serial.Serial(WHEEL_PORT, 9600) # SET COM PORT ACCORDING TO ARDUINO
 
 class JoyToTwist:
     def __init__(self):
@@ -60,12 +63,12 @@ class JoyToTwist:
 
 
         # Publish the Twist message to the /cmd_vel topic
-            ser.write(r"x {x}\n")
-            ser.write(r"z {z}\n")
-            ser.write(r"b {b}\n")
-            ser.write(r"s {s}\n")
-            ser.write(r"e {e}\n")
-            rospy.loginfo("Published to /cmd_vel and /joint_angles")
+            ser.write("x {}".format(x))
+            ser.write("z {}".format(z))
+            ser.write("b {}".format(b))
+            ser.write("s {}".format(s))
+            ser.write("e {}".format(e))
+            rospy.loginfo("Published to {}: x:{}, z:{}, base:{}, shoulder:{}, elbow:{}".format(WHEEL_PORT, x, z, b, s, e))
 
             # update the previous data
             self.prev_joy_data = current_joy_data
