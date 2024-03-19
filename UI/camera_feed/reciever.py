@@ -5,6 +5,7 @@ import numpy as np
 import base64
 from tkinter import *
 from PIL import Image, ImageTk
+import time
 
 class MultiClientHandler:
     def __init__(self, ips_and_ports):
@@ -31,14 +32,23 @@ class MultiClientHandler:
                     print(f"Websocket Connection Found for {ip}:{port}...Feeding...")
                     while True:
                         try:
+
+                            start_time = time.time()
+
                             frame_data = await websocket.recv()
+
+                            end_time = time.time()
+                            ping = end_time - start_time
 
                             buffer = base64.b64decode(frame_data)
                             np_arr = np.frombuffer(buffer, dtype=np.uint8)
 
                             frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
                             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                            text_position = (10, 30)
                             frame_resized = cv2.resize(frame_rgb, (400, 300))
+                            frame_resized = cv2.putText(frame_resized, f"{ping * 1000:.2f} ms", text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 1, cv2.LINE_AA)
+
 
                             photo_image = ImageTk.PhotoImage(image=Image.fromarray(frame_resized))
                             label_widget.photo_image = photo_image
