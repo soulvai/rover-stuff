@@ -6,6 +6,7 @@ import base64
 from tkinter import *
 from PIL import Image, ImageTk
 import time
+import config
 
 class MultiClientHandler:
     def __init__(self, ips_and_ports):
@@ -72,10 +73,10 @@ class MultiClientHandler:
 
 if __name__ == "__main__":
 
-    ips_and_ports = [("192.168.0.109", 8765), 
-                     ("192.168.0.109", 8766), 
-                     ("192.168.0.109", 8767), 
-                     ("192.168.0.109", 8768)]
+    ips_and_ports = [(config.IP, config.PORTS[0]), 
+                     (config.IP, config.PORTS[1]), 
+                     (config.IP, config.PORTS[2]), 
+                     (config.IP, config.PORTS[3])]
     
     multi_client_handler = MultiClientHandler(ips_and_ports)
     asyncio.run(multi_client_handler.client_handler())
