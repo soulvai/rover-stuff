@@ -14,8 +14,9 @@ async def server_handler(websocket, path, camera_index):
             ret, frame = cap.read()
             if not ret:
                 break
-
-            _, buffer = cv2.imencode('.jpg', frame)
+            
+            frame = cv2.resize(frame, (400, 300))
+            _, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 50])
             frame_data = base64.b64encode(buffer).decode('utf-8')
 
             await websocket.send(frame_data)
