@@ -3,7 +3,7 @@ import rospy
 import cv2
 import numpy as np
 from cv2 import aruco
-from custom.msg import direction
+from aruco_detector.msg import direction
 
 ################ROS Initialization Codes###################
 
