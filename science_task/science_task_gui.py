@@ -1,13 +1,6 @@
 import tkinter as tk
 # from PIL import Image, ImageTk
 
-import rospy
-from std_msgs.msg import Int32
-rospy.init_node('arduino_interface', anonymous=True)
-# # Create a publisher for the motor command value
-pub = rospy.Publisher('motor_command_value', Int32, queue_size=10)
-
-
 
 def increment_slider(event):
     current_value = int(slider.get())
@@ -20,8 +13,6 @@ def decrement_slider(event):
     new_value = max(current_value - 1, 0)  # Ensure the new value does not go below the minimum value
     slider.set(new_value)
     send_to_arduino(new_value + 9)  # Send updated value to Arduino
-
-
 
 
 def toggle_button(button,button2,button4,button5,button6,button7,button8):
@@ -52,6 +43,7 @@ def button_click(button,button2,value):
       # Send 1 to Arduino when button is clicked
 def on_space(event):
     toggle_button()
+
 def button_click2(button,button2,button3,button4,button5,value):
     button.config(bg="green")
     button2.config(bg="yellow")
@@ -65,8 +57,8 @@ def button_click2(button,button2,button3,button4,button5,value):
 
 
 def send_to_arduino(value):
-    # print(value)
-    pub.publish(value)
+    print(value)
+    # pub.publish(value)
     
 
 def update_gui(angle):
@@ -109,8 +101,6 @@ button8 = tk.Button(root, text="Drill", bg="yellow")
 button8.place(x=240, y=20)  # Place the button at coordinates (100, 50)
 
 
-
-
 button.config(command=lambda:button_click(button,button2,1))
 button2.config(command=lambda:button_click(button2,button,2))
 button3.config(command=lambda:toggle_button(button4,button5,button6,button7,button,button2,button8))
@@ -124,7 +114,7 @@ button8.config(command=lambda:button_click2(button8,button5,button6,button4,butt
 
 
 
-slider = tk.Scale(root, from_=0, to=100, orient="horizontal", command=lambda value: send_to_arduino((int(value) + 10)))
+slider = tk.Scale(root, from_=0, to=100, orient="horizontal", command = lambda value: send_to_arduino((int(value) + 10)))
 
 slider.place(x=100, y=110)
 
@@ -144,24 +134,4 @@ angle_label4 = tk.Label(root, text="weight ")
 angle_label4.place(x=200, y=270)
 
 
-
-
-
-# update_gui(10)
-
-
-
-
-
-
-
-
-
-
-# Set background color of the main window (adjust transparency as needed)
-
- 
-
 root.mainloop()
-# rospy.spin()
-
