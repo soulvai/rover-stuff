@@ -1,3 +1,9 @@
+
+#include "ros.h"
+#include "geometry_msgs/Twist.h"
+
+ros::NodeHandle nh;
+
 #define x_factor 200
 #define z_factor 50
 
@@ -18,48 +24,9 @@
 float x = 0.0; // Speed in forward/backward direction (0 to 1 for forward, -1 to 0 for backward)
 float z = 0.0; // Speed in left/right turning (-1 to 1)
 
-void setup() {
-  // Initialize serial communication
-  Serial.begin(9600);
-  pinMode(LED_BUILTIN, OUTPUT);
-
-  // Set motor driver pins as outputs
-  pinMode(ARPWM, OUTPUT);
-  pinMode(ALPWM, OUTPUT);
-  pinMode(A1ENRF, OUTPUT);
-  pinMode(A2ENBL, OUTPUT);
-    
-  pinMode(BRPWM, OUTPUT);
-  pinMode(BLPWM, OUTPUT);
-  pinMode(B1ENLF, OUTPUT);
-  pinMode(B2ENBR, OUTPUT);
-
-  // enable the motor drivers
-  digitalWrite(A1ENRF, HIGH);
-  digitalWrite(A2ENBL, HIGH);
-  digitalWrite(B1ENLF, HIGH);
-  digitalWrite(B2ENBR, HIGH);
-}
-
-void loop() {
-  // Read data from serial monitor if available
-  if (Serial.available() > 0) {
-    // Read the incoming character
-    char command = Serial.read();
-
-    // Check if the received command is 'x' or 'z'
-    if (command == 'x' || command == 'z') {
-      // Read the value associated with the command
-      float value = Serial.parseFloat();
-
-      // Update global variables based on the command
-      if (command == 'x') {
-        x = value;
-      } else if (command == 'z') {
-        z = value;
-      }
-    }
-  }
+void vel_callback(const geometry_msgs::Twist& vel) {
+  x = data.linear.x;
+  z = data.angular.z;
 
   // Adjust motor speeds based on the values of x and z
   // speed will be purely rotational if x == 0, otherwise it will be a combined effect of x and z, where x is dominating
@@ -89,4 +56,37 @@ void loop() {
   Serial.println(leftSpeed);
   Serial.println("rightSpeed:");
   Serial.println(rightSpeed);
+}
+
+ros::Subscriber<geometry_msgs::Twist> sub("cmd_vel", vel_callback);
+
+void setup() {
+  // ros initialization 
+  nh.initNode();
+  nh.subscribe(sub);
+
+  // Initialize serial communication
+  Serial.begin(9600);
+
+  // Set motor driver pins as outputs
+  pinMode(ARPWM, OUTPUT);
+  pinMode(ALPWM, OUTPUT);
+  pinMode(A1ENRF, OUTPUT);
+  pinMode(A2ENBL, OUTPUT);
+    
+  pinMode(BRPWM, OUTPUT);
+  pinMode(BLPWM, OUTPUT);
+  pinMode(B1ENLF, OUTPUT);
+  pinMode(B2ENBR, OUTPUT);
+
+  // enable the motor drivers
+  digitalWrite(A1ENRF, HIGH);
+  digitalWrite(A2ENBL, HIGH);
+  digitalWrite(B1ENLF, HIGH);
+  digitalWrite(B2ENBR, HIGH);
+}
+
+void loop(){
+  nh.spinOnce();
+  delay(10);
 }
