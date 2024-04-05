@@ -2,19 +2,18 @@
 
 import rospy
 from sensor_msgs.msg import Joy
+from geometry_msgs.msg import Twist
 import numpy as np
-import serial
 
-
-ser = serial.Serial('/dev/ttyUSB0', 9600) # SET COM PORT ACCORDING TO ARDUINO
 
 class JoyToTwist:
     def __init__(self):
         # Initialize the node
-        rospy.init_node('joy_to_serial_node')
+        rospy.init_node('joy_to_rosserial_node')
 
         # Create a subscriber for the /joy topic
         rospy.Subscriber('/joy', Joy, self.joystick_callback)
+        self.output_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 		# Controller variables
         self.SCALE = 1
         self.SCALING_FACTOR = 0
@@ -41,32 +40,25 @@ class JoyToTwist:
                 self.SCALE = -1.0
 
             # These indices might need adjustment depending on your joystick
-
-            x = (data.buttons[7] - data.buttons[6]) * self.SCALE  # Scale as necessary
-            if x > 1.0:
-                x = 1.0
-            if x < -1.0:
-                x = -1.0
+            output = Twist()
+        
+            output.linear.x = (data.buttons[7] - data.buttons[6]) * self.SCALE  # Scale as necessary
+            if output.linear.x > 1.0:
+                output.linear.x = 1.0
+            if output.linear.x < -1.0:
+                output.linear.x = -1.0
             
-            z = data.axes[0] * (-self.SCALE)  # Scale as necessary
-            if z > 1.0:
-                z = 1.0
-            if z < -1.0:
-                z = -1.0
-
-            # Control for base, shoulder, elbow
-            # b = (data.buttons[4] * -1) + data.buttons[5]
-            # s = int(data.axes[2])
-            # e = (data.buttons[2] * -1) + data.buttons[0]
+            output.angular.z = data.axes[0] * (-self.SCALE)  # Scale as necessary
+            if output.angular.z > 1.0:
+                output.angular.z = 1.0
+            if output.angular.z < -1.0:
+                output.angular.z = -1.0
 
 
-        # Publish the Twist message to the /cmd_vel topic
-            ser.write("x {}".format(x))
-            ser.write("z {}".format(z))
-            # ser.write("b {}".format(b))
-            # ser.write("s {}".format(s))
-            # ser.write("e {}".format(e))
-            rospy.loginfo("Published to {}: x:{}, z:{}".format('/dev/ttyUSB0', x, z))
+            # Publish the Twist message to the /cmd_vel topic
+            self.output_publisher.publish(output)
+
+            rospy.loginfo("Published: x:{}, z:{}".format(output.linear.x, output.angular.z))
 
             # update the previous data
         self.prev_joy_data = current_joy_data
